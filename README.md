@@ -45,6 +45,17 @@ curl http://localhost:8080/api/items
 
 Si el puerto cambia en `.env`, reemplace `8080` en los comandos por el valor de `FRONTEND_PORT`.
 
+## Validación completa
+
+Para repetir las pruebas de comunicación, persistencia, fallo controlado y recuperación en Codespaces:
+
+```bash
+bash scripts/validate-compose.sh
+```
+
+El script registra las salidas en `docs/evidence/validation-<fecha>.log`. Al terminar deja los servicios
+levantados para poder revisar la aplicación; use `docker compose down` cuando termine la demostración.
+
 ## Diagnóstico
 
 ```bash
