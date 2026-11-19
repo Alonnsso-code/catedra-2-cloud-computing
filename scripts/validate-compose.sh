@@ -8,6 +8,7 @@ EVIDENCE_DIR="docs/evidence"
 mkdir -p "$EVIDENCE_DIR"
 LOG_FILE="$EVIDENCE_DIR/validation-$(date -u +%Y%m%dT%H%M%SZ).log"
 exec > >(tee "$LOG_FILE") 2>&1
+trap 'status=$?; printf "\\nScript exit status: %s\\nEvidence file: %s\\n" "$status" "$LOG_FILE"' EXIT
 
 section() {
   printf '\n===== %s =====\n' "$1"
@@ -36,38 +37,51 @@ assert_healthy() {
       echo "ERROR: no running container found for $service."
       return 1
     fi
-    health="$(docker inspect --format '{{.State.Health.Status}}' "$container_id")"
-    printf '%s health=%s\n' "$service" "$health"
+    for attempt in $(seq 1 30); do
+      health="$(docker inspect --format '{{.State.Health.Status}}' "$container_id")"
+      printf '%s health=%s\n' "$service" "$health"
+      [[ "$health" == "healthy" ]] && break
+      if [[ "$health" == "unhealthy" ]]; then
+        break
+      fi
+      sleep 2
+    done
     if [[ "$health" != "healthy" ]]; then
-      echo "ERROR: $service is not healthy."
+      echo "ERROR: $service did not become healthy within 60 seconds."
+      docker compose logs --tail=80 "$service"
       return 1
     fi
   done
 }
 
-section "Baseline diagnosis from the original commit"
-git show cce1dfb:compose.yaml
-git show cce1dfb:backend/Dockerfile
-git show cce1dfb:backend/requirements.txt
-git show cce1dfb:frontend/nginx.conf
-BASELINE_DIR="$(mktemp -d)"
-git archive cce1dfb | tar -x -C "$BASELINE_DIR"
-set +e
-docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" up --build -d
-BASELINE_START_STATUS=$?
-set -e
-printf 'Original compose startup exit status: %s\n' "$BASELINE_START_STATUS"
-docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" ps -a
-docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" logs --tail=60 db backend frontend || true
-set +e
-docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" run --build --rm backend \
-  uvicorn main:app --host 0.0.0.0 --port 8000
-BASELINE_DRIVER_STATUS=$?
-set -e
-printf 'Original backend with corrected module target exit status: %s\n' "$BASELINE_DRIVER_STATUS"
-docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" down -v --remove-orphans
-if [[ "$BASELINE_DIR" == /tmp/tmp.* ]]; then
-  rm -rf "$BASELINE_DIR"
+if [[ "${SKIP_BASELINE:-0}" == "1" ]]; then
+  section "Baseline diagnosis"
+  echo "Skipped: captured in a previous validation log."
+else
+  section "Baseline diagnosis from the original commit"
+  git show cce1dfb:compose.yaml
+  git show cce1dfb:backend/Dockerfile
+  git show cce1dfb:backend/requirements.txt
+  git show cce1dfb:frontend/nginx.conf
+  BASELINE_DIR="$(mktemp -d)"
+  git archive cce1dfb | tar -x -C "$BASELINE_DIR"
+  set +e
+  docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" up --build -d
+  BASELINE_START_STATUS=$?
+  set -e
+  printf 'Original compose startup exit status: %s\n' "$BASELINE_START_STATUS"
+  docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" ps -a
+  docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" logs --tail=60 db backend frontend || true
+  set +e
+  docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" run --build --rm backend \
+    uvicorn main:app --host 0.0.0.0 --port 8000
+  BASELINE_DRIVER_STATUS=$?
+  set -e
+  printf 'Original backend with corrected module target exit status: %s\n' "$BASELINE_DRIVER_STATUS"
+  docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" down -v --remove-orphans
+  if [[ "$BASELINE_DIR" == /tmp/tmp.* ]]; then
+    rm -rf "$BASELINE_DIR"
+  fi
 fi
 
 section "Docker toolchain"
@@ -89,6 +103,8 @@ assert_healthy
 echo "PASS: API and PostgreSQL health endpoint"
 
 section "Frontend to backend to PostgreSQL communication"
+curl -fsS http://localhost:8080/ | grep -F 'ACI606 Docker Rescue'
+echo "PASS: frontend page served by Nginx"
 ITEM="codespace-validation-$(date -u +%Y%m%dT%H%M%SZ)"
 echo "Test item: $ITEM"
 POST_RESPONSE="$(curl -fsS -X POST http://localhost:8080/api/items \

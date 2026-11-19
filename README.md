@@ -55,6 +55,8 @@ bash scripts/validate-compose.sh
 
 El script registra las salidas en `docs/evidence/validation-<fecha>.log`. Al terminar deja los servicios
 levantados para poder revisar la aplicación; use `docker compose down` cuando termine la demostración.
+Después de capturar la evidencia inicial, se pueden repetir solo las pruebas funcionales con
+`SKIP_BASELINE=1 bash scripts/validate-compose.sh`.
 
 ## Diagnóstico
 
