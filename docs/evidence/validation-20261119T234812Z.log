@@ -1,0 +1,949 @@
+
+===== Baseline diagnosis from the original commit =====
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: "postgresql://appuser:wrongpass@localhost:5432/appdb"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: rescue123
+      POSTGRES_DB: appdb
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY main.py .
+EXPOSE 8000
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+SQLAlchemy==2.0.36
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://localhost:8000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+ db Pulling 
+ 881fc932939e Pulling fs layer 
+ 6cedc56424d1 Pulling fs layer 
+ 59b353deb50e Pulling fs layer 
+ 7a36a4ed4172 Pulling fs layer 
+ cc382d912eb7 Pulling fs layer 
+ 576cb8ef4643 Pulling fs layer 
+ 47714f1b82c2 Pulling fs layer 
+ 8e5860b895ab Pulling fs layer 
+ b9f6a8f632b2 Pulling fs layer 
+ 98e9a0326760 Pulling fs layer 
+ 7a36a4ed4172 Waiting 
+ cc382d912eb7 Waiting 
+ 576cb8ef4643 Waiting 
+ 47714f1b82c2 Waiting 
+ 8e5860b895ab Waiting 
+ b9f6a8f632b2 Waiting 
+ 98e9a0326760 Waiting 
+ 6cedc56424d1 Downloading [==================================================>]     994B/994B
+ 6cedc56424d1 Verifying Checksum 
+ 6cedc56424d1 Download complete 
+ 59b353deb50e Downloading [>                                                  ]  15.79kB/901.1kB
+ 881fc932939e Downloading [>                                                  ]  48.55kB/3.854MB
+ 59b353deb50e Verifying Checksum 
+ 59b353deb50e Download complete 
+ 7a36a4ed4172 Downloading [==================================================>]     171B/171B
+ 881fc932939e Verifying Checksum 
+ 881fc932939e Download complete 
+ 7a36a4ed4172 Verifying Checksum 
+ 7a36a4ed4172 Download complete 
+ 881fc932939e Extracting [>                                                  ]  65.54kB/3.854MB
+ cc382d912eb7 Downloading [==================================================>]     116B/116B
+ cc382d912eb7 Verifying Checksum 
+ cc382d912eb7 Download complete 
+ 47714f1b82c2 Downloading [==================>                                ]  3.503kB/9.673kB
+ 47714f1b82c2 Downloading [==================================================>]  9.673kB/9.673kB
+ 47714f1b82c2 Verifying Checksum 
+ 47714f1b82c2 Download complete 
+ 576cb8ef4643 Downloading [>                                                  ]  533.3kB/111.5MB
+ 8e5860b895ab Downloading [==================================================>]     170B/170B
+ 8e5860b895ab Verifying Checksum 
+ 8e5860b895ab Download complete 
+ 881fc932939e Extracting [=================>                                 ]  1.311MB/3.854MB
+ b9f6a8f632b2 Downloading [============================>                      ]  3.503kB/6.104kB
+ b9f6a8f632b2 Downloading [==================================================>]  6.104kB/6.104kB
+ b9f6a8f632b2 Verifying Checksum 
+ b9f6a8f632b2 Download complete 
+ 98e9a0326760 Downloading [==================================================>]     183B/183B
+ 98e9a0326760 Verifying Checksum 
+ 98e9a0326760 Download complete 
+ 576cb8ef4643 Downloading [=======>                                           ]  16.49MB/111.5MB
+ 881fc932939e Extracting [===========================>                       ]  2.097MB/3.854MB
+ 576cb8ef4643 Downloading [================>                                  ]  37.82MB/111.5MB
+ 881fc932939e Extracting [=============================================>     ]  3.539MB/3.854MB
+ 881fc932939e Extracting [==================================================>]  3.854MB/3.854MB
+ 881fc932939e Extracting [==================================================>]  3.854MB/3.854MB
+ 576cb8ef4643 Downloading [==========================>                        ]  59.72MB/111.5MB
+ 881fc932939e Pull complete 
+ 6cedc56424d1 Extracting [==================================================>]     994B/994B
+ 6cedc56424d1 Extracting [==================================================>]     994B/994B
+ 576cb8ef4643 Downloading [==================================>                ]  76.83MB/111.5MB
+ 576cb8ef4643 Downloading [=======================================>           ]  88.01MB/111.5MB
+ 576cb8ef4643 Downloading [===========================================>       ]  96.55MB/111.5MB
+ 576cb8ef4643 Verifying Checksum 
+ 576cb8ef4643 Download complete 
+ 6cedc56424d1 Pull complete 
+ 59b353deb50e Extracting [=>                                                 ]  32.77kB/901.1kB
+ 59b353deb50e Extracting [==================================================>]  901.1kB/901.1kB
+ 59b353deb50e Pull complete 
+ 7a36a4ed4172 Extracting [==================================================>]     171B/171B
+ 7a36a4ed4172 Extracting [==================================================>]     171B/171B
+ 7a36a4ed4172 Pull complete 
+ cc382d912eb7 Extracting [==================================================>]     116B/116B
+ cc382d912eb7 Extracting [==================================================>]     116B/116B
+ cc382d912eb7 Pull complete 
+ 576cb8ef4643 Extracting [>                                                  ]  557.1kB/111.5MB
+ 576cb8ef4643 Extracting [>                                                  ]  2.228MB/111.5MB
+ 576cb8ef4643 Extracting [===>                                               ]  7.242MB/111.5MB
+ 576cb8ef4643 Extracting [====>                                              ]  10.58MB/111.5MB
+ 576cb8ef4643 Extracting [=====>                                             ]  12.81MB/111.5MB
+ 576cb8ef4643 Extracting [======>                                            ]   15.6MB/111.5MB
+ 576cb8ef4643 Extracting [=======>                                           ]  17.83MB/111.5MB
+ 576cb8ef4643 Extracting [=========>                                         ]  21.17MB/111.5MB
+ 576cb8ef4643 Extracting [==========>                                        ]  23.95MB/111.5MB
+ 576cb8ef4643 Extracting [=============>                                     ]  29.52MB/111.5MB
+ 576cb8ef4643 Extracting [==============>                                    ]  32.87MB/111.5MB
+ 576cb8ef4643 Extracting [===============>                                   ]  35.65MB/111.5MB
+ 576cb8ef4643 Extracting [=================>                                 ]  38.99MB/111.5MB
+ 576cb8ef4643 Extracting [==================>                                ]  41.78MB/111.5MB
+ 576cb8ef4643 Extracting [===================>                               ]  44.56MB/111.5MB
+ 576cb8ef4643 Extracting [=====================>                             ]  48.46MB/111.5MB
+ 576cb8ef4643 Extracting [=======================>                           ]  52.92MB/111.5MB
+ 576cb8ef4643 Extracting [========================>                          ]  55.71MB/111.5MB
+ 576cb8ef4643 Extracting [==========================>                        ]  58.49MB/111.5MB
+ 576cb8ef4643 Extracting [===========================>                       ]  60.72MB/111.5MB
+ 576cb8ef4643 Extracting [=============================>                     ]  65.18MB/111.5MB
+ 576cb8ef4643 Extracting [===============================>                   ]  70.19MB/111.5MB
+ 576cb8ef4643 Extracting [=================================>                 ]   75.2MB/111.5MB
+ 576cb8ef4643 Extracting [====================================>              ]  80.77MB/111.5MB
+ 576cb8ef4643 Extracting [====================================>              ]  81.33MB/111.5MB
+ 576cb8ef4643 Extracting [====================================>              ]  81.89MB/111.5MB
+ 576cb8ef4643 Extracting [=====================================>             ]  83.56MB/111.5MB
+ 576cb8ef4643 Extracting [======================================>            ]  85.23MB/111.5MB
+ 576cb8ef4643 Extracting [=======================================>           ]  88.01MB/111.5MB
+ 576cb8ef4643 Extracting [========================================>          ]  91.36MB/111.5MB
+ 576cb8ef4643 Extracting [==========================================>        ]  95.81MB/111.5MB
+ 576cb8ef4643 Extracting [===========================================>       ]  98.04MB/111.5MB
+ 576cb8ef4643 Extracting [==============================================>    ]  104.2MB/111.5MB
+ 576cb8ef4643 Extracting [=================================================> ]  109.7MB/111.5MB
+ 576cb8ef4643 Extracting [==================================================>]  111.5MB/111.5MB
+ 576cb8ef4643 Pull complete 
+ 47714f1b82c2 Extracting [==================================================>]  9.673kB/9.673kB
+ 47714f1b82c2 Extracting [==================================================>]  9.673kB/9.673kB
+ 47714f1b82c2 Pull complete 
+ 8e5860b895ab Extracting [==================================================>]     170B/170B
+ 8e5860b895ab Extracting [==================================================>]     170B/170B
+ 8e5860b895ab Pull complete 
+ b9f6a8f632b2 Extracting [==================================================>]  6.104kB/6.104kB
+ b9f6a8f632b2 Extracting [==================================================>]  6.104kB/6.104kB
+ b9f6a8f632b2 Pull complete 
+ 98e9a0326760 Extracting [==================================================>]     183B/183B
+ 98e9a0326760 Extracting [==================================================>]     183B/183B
+ 98e9a0326760 Pull complete 
+ db Pulled 
+Compose can now delegate builds to bake for better performance.
+ To do so, set COMPOSE_BAKE=true.
+#0 building with "default" instance using docker driver
+
+#1 [backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 242B done
+#1 DONE 0.0s
+
+#2 [backend auth] library/python:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [backend internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 0.6s
+
+#4 [backend internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [backend internal] load build context
+#5 transferring context: 1.94kB done
+#5 DONE 0.1s
+
+#6 [backend 1/5] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#6 resolve docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b 0.0s done
+#6 sha256:05a994d2344eb364cc186910f4fc8786a38215f39f00d0acc25bff33a08f4177 1.75kB / 1.75kB done
+#6 sha256:78976a69c067520ef8be34cde307ef9f6fea6dcefa50edb57039773d241ca0db 5.66kB / 5.66kB done
+#6 sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 3.15MB / 29.86MB 0.1s
+#6 sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9 0B / 1.29MB 0.1s
+#6 sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 0B / 12.12MB 0.1s
+#6 sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b 10.37kB / 10.37kB done
+#6 sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 11.53MB / 29.86MB 0.2s
+#6 sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 2.10MB / 12.12MB 0.2s
+#6 sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 17.83MB / 29.86MB 0.3s
+#6 sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9 1.29MB / 1.29MB 0.2s done
+#6 sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 8.58MB / 12.12MB 0.3s
+#6 sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 29.86MB / 29.86MB 0.5s
+#6 sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 12.12MB / 12.12MB 0.5s
+#6 sha256:05e0eee5572e9c9f50408a2132590133b830a668a1cf2ff2b150f19c57707e2b 248B / 248B 0.3s done
+#6 extracting sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41
+#6 sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 29.86MB / 29.86MB 1.2s done
+#6 sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 12.12MB / 12.12MB 1.2s done
+#6 extracting sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 1.2s done
+#6 extracting sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9 0.1s
+#6 extracting sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9 0.2s done
+#6 extracting sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085
+#6 extracting sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 0.7s done
+#6 extracting sha256:05e0eee5572e9c9f50408a2132590133b830a668a1cf2ff2b150f19c57707e2b
+#6 extracting sha256:05e0eee5572e9c9f50408a2132590133b830a668a1cf2ff2b150f19c57707e2b done
+#6 DONE 6.6s
+
+#7 [backend 2/5] WORKDIR /app
+#7 DONE 0.0s
+
+#8 [backend 3/5] COPY requirements.txt .
+#8 DONE 0.0s
+
+#9 [backend 4/5] RUN pip install --no-cache-dir -r requirements.txt
+#9 2.032 Collecting fastapi==0.115.5 (from -r requirements.txt (line 1))
+#9 2.147   Downloading fastapi-0.115.5-py3-none-any.whl.metadata (27 kB)
+#9 2.231 Collecting uvicorn==0.32.1 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#9 2.267   Downloading uvicorn-0.32.1-py3-none-any.whl.metadata (6.6 kB)
+#9 2.714 Collecting SQLAlchemy==2.0.36 (from -r requirements.txt (line 3))
+#9 2.749   Downloading SQLAlchemy-2.0.36-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.7 kB)
+#9 2.820 Collecting starlette<0.42.0,>=0.40.0 (from fastapi==0.115.5->-r requirements.txt (line 1))
+#9 2.853   Downloading starlette-0.41.3-py3-none-any.whl.metadata (6.0 kB)
+#9 3.036 Collecting pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4 (from fastapi==0.115.5->-r requirements.txt (line 1))
+#9 3.070   Downloading pydantic-2.14.4-py3-none-any.whl.metadata (143 kB)
+#9 3.170 Collecting typing-extensions>=4.8.0 (from fastapi==0.115.5->-r requirements.txt (line 1))
+#9 3.205   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#9 3.258 Collecting click>=7.0 (from uvicorn==0.32.1->uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#9 3.292   Downloading click-8.5.1-py3-none-any.whl.metadata (2.6 kB)
+#9 3.333 Collecting h11>=0.8 (from uvicorn==0.32.1->uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#9 3.367   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+#9 3.553 Collecting greenlet!=0.4.17 (from SQLAlchemy==2.0.36->-r requirements.txt (line 3))
+#9 3.587   Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+#9 3.654 Collecting httptools>=0.6.3 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#9 3.691   Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+#9 3.741 Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#9 3.775   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+#9 3.885 Collecting pyyaml>=5.1 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#9 3.921   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+#9 4.030 Collecting uvloop!=0.15.0,!=0.15.1,>=0.14.0 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#9 4.065   Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+#9 4.193 Collecting watchfiles>=0.13 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#9 4.228   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+#9 4.414 Collecting websockets>=10.4 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#9 4.449   Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+#9 4.492 Collecting annotated-types>=0.6.0 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.115.5->-r requirements.txt (line 1))
+#9 4.528   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#9 5.282 Collecting pydantic-core==2.50.5 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.115.5->-r requirements.txt (line 1))
+#9 5.316   Downloading pydantic_core-2.50.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.6 kB)
+#9 5.363 Collecting typing-inspection>=0.4.4 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.115.5->-r requirements.txt (line 1))
+#9 5.397   Downloading typing_inspection-0.4.5-py3-none-any.whl.metadata (2.6 kB)
+#9 5.459 Collecting anyio<5,>=3.4.0 (from starlette<0.42.0,>=0.40.0->fastapi==0.115.5->-r requirements.txt (line 1))
+#9 5.492   Downloading anyio-4.16.0-py3-none-any.whl.metadata (4.7 kB)
+#9 5.551 Collecting idna>=2.8 (from anyio<5,>=3.4.0->starlette<0.42.0,>=0.40.0->fastapi==0.115.5->-r requirements.txt (line 1))
+#9 5.584   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+#9 5.628 Downloading fastapi-0.115.5-py3-none-any.whl (94 kB)
+#9 5.667 Downloading uvicorn-0.32.1-py3-none-any.whl (63 kB)
+#9 5.707 Downloading SQLAlchemy-2.0.36-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.2 MB)
+#9 5.833    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.2/3.2 MB 33.0 MB/s eta 0:00:00
+#9 5.869 Downloading click-8.5.1-py3-none-any.whl (126 kB)
+#9 5.903 Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (621 kB)
+#9 5.906    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 621.4/621.4 kB 440.2 MB/s eta 0:00:00
+#9 5.941 Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#9 5.976 Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (552 kB)
+#9 5.979    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 552.8/552.8 kB 568.5 MB/s eta 0:00:00
+#9 6.014 Downloading pydantic-2.14.4-py3-none-any.whl (494 kB)
+#9 6.051 Downloading pydantic_core-2.50.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.3 MB)
+#9 6.062    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 299.7 MB/s eta 0:00:00
+#9 6.101 Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+#9 6.136 Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+#9 6.143    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 332.1 MB/s eta 0:00:00
+#9 6.184 Downloading starlette-0.41.3-py3-none-any.whl (73 kB)
+#9 6.221 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#9 6.259 Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.5 MB)
+#9 6.325    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 69.9 MB/s eta 0:00:00
+#9 6.363 Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+#9 6.409 Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (226 kB)
+#9 6.455 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#9 6.492 Downloading anyio-4.16.0-py3-none-any.whl (134 kB)
+#9 6.531 Downloading typing_inspection-0.4.5-py3-none-any.whl (14 kB)
+#9 6.570 Downloading idna-3.20-py3-none-any.whl (69 kB)
+#9 6.654 Installing collected packages: websockets, uvloop, typing-extensions, pyyaml, python-dotenv, idna, httptools, h11, greenlet, click, annotated-types, uvicorn, typing-inspection, SQLAlchemy, pydantic-core, anyio, watchfiles, starlette, pydantic, fastapi
+#9 9.304 Successfully installed SQLAlchemy-2.0.36 annotated-types-0.8.0 anyio-4.16.0 click-8.5.1 fastapi-0.115.5 greenlet-3.5.6 h11-0.16.0 httptools-0.9.0 idna-3.20 pydantic-2.14.4 pydantic-core-2.50.5 python-dotenv-1.2.4 pyyaml-6.0.3 starlette-0.41.3 typing-extensions-4.16.0 typing-inspection-0.4.5 uvicorn-0.32.1 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.4
+#9 9.304 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#9 9.485 
+#9 9.485 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#9 9.485 [notice] To update, run: pip install --upgrade pip
+#9 DONE 11.0s
+
+#10 [backend 5/5] COPY main.py .
+#10 DONE 0.1s
+
+#11 [backend] exporting to image
+#11 exporting layers
+#11 exporting layers 1.5s done
+#11 writing image sha256:c7e633421276bb561bd4934fdc7afe2f032b54edb4bb8a0ec89ea3bd76f6cb57 done
+#11 naming to docker.io/library/rescue_baseline-backend done
+#11 DONE 1.5s
+
+#12 [backend] resolving provenance for metadata file
+#12 DONE 0.0s
+
+#13 [frontend internal] load build definition from Dockerfile
+#13 transferring dockerfile: 168B done
+#13 DONE 0.0s
+
+#14 [frontend auth] library/nginx:pull token for registry-1.docker.io
+#14 DONE 0.0s
+
+#15 [frontend internal] load metadata for docker.io/library/nginx:1.27-alpine
+#15 DONE 0.3s
+
+#16 [frontend internal] load .dockerignore
+#16 transferring context: 2B done
+#16 DONE 0.0s
+
+#17 [frontend internal] load build context
+#17 transferring context: 2.96kB done
+#17 DONE 0.0s
+
+#18 [frontend 1/3] FROM docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+#18 resolve docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10 0.0s done
+#18 sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10 10.33kB / 10.33kB done
+#18 sha256:6769dc3a703c719c1d2756bda113659be28ae16cf0da58dd5fd823d6b9a050ea 10.79kB / 10.79kB done
+#18 sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870 3.64MB / 3.64MB 0.1s
+#18 sha256:62223d644fa234c3a1cc785ee14242ec47a77364226f1c811d2f669f96dc2ac8 2.50kB / 2.50kB done
+#18 sha256:61ca4f733c802afd9e05a32f0de0361b6d713b8b53292dc15fb093229f648674 0B / 1.79MB 0.1s
+#18 sha256:b464cfdf2a6319875aeb27359ec549790ce14d8214fcb16ef915e4530e5ed235 629B / 629B 0.1s
+#18 sha256:61ca4f733c802afd9e05a32f0de0361b6d713b8b53292dc15fb093229f648674 1.79MB / 1.79MB 0.2s
+#18 sha256:b464cfdf2a6319875aeb27359ec549790ce14d8214fcb16ef915e4530e5ed235 629B / 629B 0.2s done
+#18 sha256:d7e5070240863957ebb0b5a44a5729963c3462666baa2947d00628cb5f2d5773 0B / 955B 0.2s
+#18 sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870 3.64MB / 3.64MB 0.2s done
+#18 sha256:61ca4f733c802afd9e05a32f0de0361b6d713b8b53292dc15fb093229f648674 1.79MB / 1.79MB 0.2s done
+#18 sha256:d7e5070240863957ebb0b5a44a5729963c3462666baa2947d00628cb5f2d5773 955B / 955B 0.2s done
+#18 extracting sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870 0.1s
+#18 sha256:81bd8ed7ec6789b0cb7f1b47ee731c522f6dba83201ec73cd6bca1350f582948 402B / 402B 0.3s done
+#18 sha256:34a64644b756511a2e217f0508e11d1a572085d66cd6dc9a555a082ad49a3102 1.40kB / 1.40kB 0.3s done
+#18 sha256:39c2ddfd6010082a4a646e7ca44e95aca9bf3eaebc00f17f7ccc2954004f2a7d 0B / 15.52MB 0.3s
+#18 sha256:197eb75867ef4fcecd4724f17b0972ab0489436860a594a9445f8eaff8155053 1.21kB / 1.21kB 0.2s done
+#18 extracting sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870 0.2s done
+#18 sha256:39c2ddfd6010082a4a646e7ca44e95aca9bf3eaebc00f17f7ccc2954004f2a7d 15.52MB / 15.52MB 0.5s
+#18 sha256:39c2ddfd6010082a4a646e7ca44e95aca9bf3eaebc00f17f7ccc2954004f2a7d 15.52MB / 15.52MB 0.7s done
+#18 extracting sha256:61ca4f733c802afd9e05a32f0de0361b6d713b8b53292dc15fb093229f648674 0.1s done
+#18 extracting sha256:b464cfdf2a6319875aeb27359ec549790ce14d8214fcb16ef915e4530e5ed235
+#18 extracting sha256:b464cfdf2a6319875aeb27359ec549790ce14d8214fcb16ef915e4530e5ed235 done
+#18 extracting sha256:d7e5070240863957ebb0b5a44a5729963c3462666baa2947d00628cb5f2d5773 done
+#18 extracting sha256:81bd8ed7ec6789b0cb7f1b47ee731c522f6dba83201ec73cd6bca1350f582948 done
+#18 extracting sha256:197eb75867ef4fcecd4724f17b0972ab0489436860a594a9445f8eaff8155053 done
+#18 extracting sha256:34a64644b756511a2e217f0508e11d1a572085d66cd6dc9a555a082ad49a3102
+#18 extracting sha256:34a64644b756511a2e217f0508e11d1a572085d66cd6dc9a555a082ad49a3102 done
+#18 extracting sha256:39c2ddfd6010082a4a646e7ca44e95aca9bf3eaebc00f17f7ccc2954004f2a7d 0.1s
+#18 extracting sha256:39c2ddfd6010082a4a646e7ca44e95aca9bf3eaebc00f17f7ccc2954004f2a7d 0.4s done
+#18 DONE 3.0s
+
+#19 [frontend 2/3] COPY index.html /usr/share/nginx/html/index.html
+#19 DONE 0.0s
+
+#20 [frontend 3/3] COPY nginx.conf /etc/nginx/conf.d/default.conf
+#20 DONE 0.0s
+
+#21 [frontend] exporting to image
+#21 exporting layers 1.0s done
+#21 writing image sha256:5f2f7c63dfd0173a4b7f767d62f76b262c0e9098f62fb61bccb7f7a7a1e046b0 done
+#21 naming to docker.io/library/rescue_baseline-frontend done
+#21 DONE 1.0s
+
+#22 [frontend] resolving provenance for metadata file
+#22 DONE 0.0s
+ backend  Built
+ frontend  Built
+ Network rescue_baseline_default  Creating
+ Network rescue_baseline_default  Created
+ Container rescue_baseline-db-1  Creating
+ Container rescue_baseline-db-1  Created
+ Container rescue_baseline-backend-1  Creating
+ Container rescue_baseline-backend-1  Created
+ Container rescue_baseline-frontend-1  Creating
+ Container rescue_baseline-frontend-1  Created
+ Container rescue_baseline-db-1  Starting
+ Container rescue_baseline-db-1  Started
+ Container rescue_baseline-backend-1  Starting
+ Container rescue_baseline-backend-1  Started
+ Container rescue_baseline-frontend-1  Starting
+ Container rescue_baseline-frontend-1  Started
+Original compose startup exit status: 0
+NAME                         IMAGE                      COMMAND                  SERVICE    CREATED         STATUS                  PORTS
+rescue_baseline-backend-1    rescue_baseline-backend    "uvicorn app:app --h…"   backend    2 seconds ago   Up 1 second             8000/tcp
+rescue_baseline-db-1         postgres:16-alpine         "docker-entrypoint.s…"   db         2 seconds ago   Up 1 second             5432/tcp
+rescue_baseline-frontend-1   rescue_baseline-frontend   "/docker-entrypoint.…"   frontend   2 seconds ago   Up Less than a second   80/tcp, 0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+backend-1  | ERROR:    Error loading ASGI app. Could not import module "app".
+db-1       | The files belonging to this database system will be owned by user "postgres".
+db-1       | This user must also own the server process.
+db-1       | 
+db-1       | The database cluster will be initialized with locale "en_US.utf8".
+db-1       | The default database encoding has accordingly been set to "UTF8".
+db-1       | The default text search configuration will be set to "english".
+db-1       | 
+db-1       | Data page checksums are disabled.
+db-1       | 
+db-1       | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+db-1       | creating subdirectories ... ok
+db-1       | selecting dynamic shared memory implementation ... posix
+db-1       | selecting default max_connections ... 100
+db-1       | selecting default shared_buffers ... 128MB
+db-1       | selecting default time zone ... UTC
+db-1       | creating configuration files ... ok
+db-1       | running bootstrap script ... ok
+db-1       | sh: locale: not found
+db-1       | 2026-11-19 23:48:53.214 UTC [34] WARNING:  no usable system locales were found
+frontend-1  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+frontend-1  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+frontend-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+frontend-1  | 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+frontend-1  | 10-listen-on-ipv6-by-default.sh: info: /etc/nginx/conf.d/default.conf differs from the packaged version
+frontend-1  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+frontend-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+frontend-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+frontend-1  | /docker-entrypoint.sh: Configuration complete; ready for start up
+frontend-1  | 2026/11/19 23:48:52 [notice] 1#1: using the "epoll" event method
+frontend-1  | 2026/11/19 23:48:52 [notice] 1#1: nginx/1.27.5
+frontend-1  | 2026/11/19 23:48:52 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+frontend-1  | 2026/11/19 23:48:52 [notice] 1#1: OS: Linux 6.8.0-1070-azure
+frontend-1  | 2026/11/19 23:48:52 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1024:524288
+frontend-1  | 2026/11/19 23:48:52 [notice] 1#1: start worker processes
+frontend-1  | 2026/11/19 23:48:52 [notice] 1#1: start worker process 28
+frontend-1  | 2026/11/19 23:48:52 [notice] 1#1: start worker process 29
+ Container rescue_baseline-db-1  Running
+Compose can now delegate builds to bake for better performance.
+ To do so, set COMPOSE_BAKE=true.
+#0 building with "default" instance using docker driver
+
+#1 [backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 242B done
+#1 DONE 0.0s
+
+#2 [backend internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.1s
+
+#3 [backend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [backend 1/5] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#4 DONE 0.0s
+
+#5 [backend internal] load build context
+#5 transferring context: 64B done
+#5 DONE 0.0s
+
+#6 [backend 2/5] WORKDIR /app
+#6 CACHED
+
+#7 [backend 3/5] COPY requirements.txt .
+#7 CACHED
+
+#8 [backend 4/5] RUN pip install --no-cache-dir -r requirements.txt
+#8 CACHED
+
+#9 [backend 5/5] COPY main.py .
+#9 CACHED
+
+#10 [backend] exporting to image
+#10 exporting layers done
+#10 writing image sha256:c7e633421276bb561bd4934fdc7afe2f032b54edb4bb8a0ec89ea3bd76f6cb57 0.0s done
+#10 naming to docker.io/library/rescue_baseline-backend 0.0s done
+#10 DONE 0.0s
+
+#11 [backend] resolving provenance for metadata file
+#11 DONE 0.0s
+Traceback (most recent call last):
+  File "/usr/local/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1653, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1560, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1414, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/click/core.py", line 911, in invoke
+    return callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+    run(
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+    server.run()
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1515, in uvloop.loop.Loop.run_until_complete
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+    await self._serve(sockets)
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+    config.load()
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 22, in import_from_string
+    raise exc from None
+  File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/main.py", line 13, in <module>
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 2, in create_engine
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py", line 281, in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 599, in create_engine
+    dbapi = dbapi_meth(**dbapi_args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py", line 690, in import_dbapi
+    import psycopg2
+ModuleNotFoundError: No module named 'psycopg2'
+
+Original backend with corrected module target exit status: 1
+ Container rescue_baseline-frontend-1  Stopping
+ Container rescue_baseline-frontend-1  Stopped
+ Container rescue_baseline-frontend-1  Removing
+ Container rescue_baseline-frontend-1  Removed
+ Container rescue_baseline-backend-1  Stopping
+ Container rescue_baseline-backend-1  Stopped
+ Container rescue_baseline-backend-1  Removing
+ Container rescue_baseline-backend-1  Removed
+ Container rescue_baseline-db-1  Stopping
+ Container rescue_baseline-db-1  Stopped
+ Container rescue_baseline-db-1  Removing
+ Container rescue_baseline-db-1  Removed
+ Network rescue_baseline_default  Removing
+ Network rescue_baseline_default  Removed
+
+===== Docker toolchain =====
+Docker version 28.1.1-1, build 4eba3773274f9d21ba90ae5bc719c3f1e4bb07a1
+Docker Compose version v2.35.1
+
+===== Compose configuration =====
+PASS: docker compose config -q
+
+===== Clean stop before startup =====
+
+===== Required clean startup =====
+Compose can now delegate builds to bake for better performance.
+ To do so, set COMPOSE_BAKE=true.
+#0 building with "default" instance using docker driver
+
+#1 [backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 243B done
+#1 DONE 0.0s
+
+#2 [backend internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.1s
+
+#3 [backend internal] load .dockerignore
+#3 transferring context: 81B done
+#3 DONE 0.0s
+
+#4 [backend 1/5] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#4 DONE 0.0s
+
+#5 [backend internal] load build context
+#5 transferring context: 1.96kB done
+#5 DONE 0.0s
+
+#6 [backend 2/5] WORKDIR /app
+#6 CACHED
+
+#7 [backend 3/5] COPY requirements.txt .
+#7 DONE 0.0s
+
+#8 [backend 4/5] RUN pip install --no-cache-dir -r requirements.txt
+#8 1.967 Collecting fastapi==0.115.5 (from -r requirements.txt (line 1))
+#8 2.086   Downloading fastapi-0.115.5-py3-none-any.whl.metadata (27 kB)
+#8 2.168 Collecting uvicorn==0.32.1 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#8 2.208   Downloading uvicorn-0.32.1-py3-none-any.whl.metadata (6.6 kB)
+#8 2.677 Collecting SQLAlchemy==2.0.36 (from -r requirements.txt (line 3))
+#8 2.714   Downloading SQLAlchemy-2.0.36-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.7 kB)
+#8 2.771 Collecting psycopg==3.2.3 (from psycopg[binary]==3.2.3->-r requirements.txt (line 4))
+#8 2.814   Downloading psycopg-3.2.3-py3-none-any.whl.metadata (4.3 kB)
+#8 2.886 Collecting starlette<0.42.0,>=0.40.0 (from fastapi==0.115.5->-r requirements.txt (line 1))
+#8 2.924   Downloading starlette-0.41.3-py3-none-any.whl.metadata (6.0 kB)
+#8 3.121 Collecting pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4 (from fastapi==0.115.5->-r requirements.txt (line 1))
+#8 3.159   Downloading pydantic-2.14.4-py3-none-any.whl.metadata (143 kB)
+#8 3.264 Collecting typing-extensions>=4.8.0 (from fastapi==0.115.5->-r requirements.txt (line 1))
+#8 3.307   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#8 3.357 Collecting click>=7.0 (from uvicorn==0.32.1->uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#8 3.394   Downloading click-8.5.1-py3-none-any.whl.metadata (2.6 kB)
+#8 3.437 Collecting h11>=0.8 (from uvicorn==0.32.1->uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#8 3.475   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+#8 3.688 Collecting greenlet!=0.4.17 (from SQLAlchemy==2.0.36->-r requirements.txt (line 3))
+#8 3.727   Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+#8 3.940 Collecting psycopg-binary==3.2.3 (from psycopg[binary]==3.2.3->-r requirements.txt (line 4))
+#8 3.979   Downloading psycopg_binary-3.2.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.8 kB)
+#8 4.046 Collecting httptools>=0.6.3 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#8 4.083   Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+#8 4.133 Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#8 4.169   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+#8 4.245 Collecting pyyaml>=5.1 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#8 4.282   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+#8 4.354 Collecting uvloop!=0.15.0,!=0.15.1,>=0.14.0 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#8 4.390   Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+#8 4.501 Collecting watchfiles>=0.13 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#8 4.539   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+#8 4.693 Collecting websockets>=10.4 (from uvicorn[standard]==0.32.1->-r requirements.txt (line 2))
+#8 4.738   Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+#8 4.785 Collecting annotated-types>=0.6.0 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.115.5->-r requirements.txt (line 1))
+#8 4.821   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#8 5.776 Collecting pydantic-core==2.50.5 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.115.5->-r requirements.txt (line 1))
+#8 5.813   Downloading pydantic_core-2.50.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.6 kB)
+#8 5.860 Collecting typing-inspection>=0.4.4 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.115.5->-r requirements.txt (line 1))
+#8 5.900   Downloading typing_inspection-0.4.5-py3-none-any.whl.metadata (2.6 kB)
+#8 5.958 Collecting anyio<5,>=3.4.0 (from starlette<0.42.0,>=0.40.0->fastapi==0.115.5->-r requirements.txt (line 1))
+#8 5.995   Downloading anyio-4.16.0-py3-none-any.whl.metadata (4.7 kB)
+#8 6.054 Collecting idna>=2.8 (from anyio<5,>=3.4.0->starlette<0.42.0,>=0.40.0->fastapi==0.115.5->-r requirements.txt (line 1))
+#8 6.091   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+#8 6.137 Downloading fastapi-0.115.5-py3-none-any.whl (94 kB)
+#8 6.183 Downloading uvicorn-0.32.1-py3-none-any.whl (63 kB)
+#8 6.226 Downloading SQLAlchemy-2.0.36-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.2 MB)
+#8 6.371    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.2/3.2 MB 28.4 MB/s eta 0:00:00
+#8 6.414 Downloading psycopg-3.2.3-py3-none-any.whl (197 kB)
+#8 6.453 Downloading psycopg_binary-3.2.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.2 MB)
+#8 6.532    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.2/4.2 MB 52.8 MB/s eta 0:00:00
+#8 6.570 Downloading click-8.5.1-py3-none-any.whl (126 kB)
+#8 6.607 Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (621 kB)
+#8 6.613    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 621.4/621.4 kB 188.7 MB/s eta 0:00:00
+#8 6.654 Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#8 6.691 Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (552 kB)
+#8 6.697    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 552.8/552.8 kB 352.7 MB/s eta 0:00:00
+#8 6.739 Downloading pydantic-2.14.4-py3-none-any.whl (494 kB)
+#8 6.776 Downloading pydantic_core-2.50.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.3 MB)
+#8 6.788    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 293.1 MB/s eta 0:00:00
+#8 6.825 Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+#8 6.865 Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+#8 6.872    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 138.8 MB/s eta 0:00:00
+#8 6.908 Downloading starlette-0.41.3-py3-none-any.whl (73 kB)
+#8 6.946 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#8 6.986 Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.5 MB)
+#8 7.030    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 115.3 MB/s eta 0:00:00
+#8 7.070 Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+#8 7.109 Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (226 kB)
+#8 7.146 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#8 7.184 Downloading anyio-4.16.0-py3-none-any.whl (134 kB)
+#8 7.222 Downloading typing_inspection-0.4.5-py3-none-any.whl (14 kB)
+#8 7.262 Downloading idna-3.20-py3-none-any.whl (69 kB)
+#8 7.386 Installing collected packages: websockets, uvloop, typing-extensions, pyyaml, python-dotenv, psycopg-binary, idna, httptools, h11, greenlet, click, annotated-types, uvicorn, typing-inspection, SQLAlchemy, pydantic-core, psycopg, anyio, watchfiles, starlette, pydantic, fastapi
+#8 10.18 Successfully installed SQLAlchemy-2.0.36 annotated-types-0.8.0 anyio-4.16.0 click-8.5.1 fastapi-0.115.5 greenlet-3.5.6 h11-0.16.0 httptools-0.9.0 idna-3.20 psycopg-3.2.3 psycopg-binary-3.2.3 pydantic-2.14.4 pydantic-core-2.50.5 python-dotenv-1.2.4 pyyaml-6.0.3 starlette-0.41.3 typing-extensions-4.16.0 typing-inspection-0.4.5 uvicorn-0.32.1 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.4
+#8 10.18 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 10.37 
+#8 10.37 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#8 10.37 [notice] To update, run: pip install --upgrade pip
+#8 DONE 12.2s
+
+#9 [backend 5/5] COPY main.py .
+#9 DONE 0.1s
+
+#10 [backend] exporting to image
+#10 exporting layers
+#10 exporting layers 1.2s done
+#10 writing image sha256:16c5d92d3f76d9c2c92e4f5614d89b71c3c40e8b06a39a2985ccb85664ed5af6
+#10 writing image sha256:16c5d92d3f76d9c2c92e4f5614d89b71c3c40e8b06a39a2985ccb85664ed5af6 done
+#10 naming to docker.io/library/catedra-2-cloud-computing-backend done
+#10 DONE 1.2s
+
+#11 [backend] resolving provenance for metadata file
+#11 DONE 0.0s
+
+#12 [frontend internal] load build definition from Dockerfile
+#12 transferring dockerfile: 168B done
+#12 DONE 0.0s
+
+#13 [frontend internal] load metadata for docker.io/library/nginx:1.27-alpine
+#13 DONE 0.1s
+
+#14 [frontend internal] load .dockerignore
+#14 transferring context:
+#14 transferring context: 65B done
+#14 DONE 0.0s
+
+#15 [frontend internal] load build context
+#15 transferring context: 2.96kB done
+#15 DONE 0.0s
+
+#16 [frontend 1/3] FROM docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+#16 CACHED
+
+#17 [frontend 2/3] COPY index.html /usr/share/nginx/html/index.html
+#17 DONE 0.0s
+
+#18 [frontend 3/3] COPY nginx.conf /etc/nginx/conf.d/default.conf
+#18 DONE 0.1s
+
+#19 [frontend] exporting to image
+#19 exporting layers 0.5s done
+#19 writing image sha256:b9ef8fe19df9c8c7de747d9020585cad8d7c85dfbbe0ef1b12040f58de4fbe5b done
+#19 naming to docker.io/library/catedra-2-cloud-computing-frontend done
+#19 DONE 0.5s
+
+#20 [frontend] resolving provenance for metadata file
+#20 DONE 0.0s
+ backend  Built
+ frontend  Built
+ Network catedra-2-cloud-computing_default  Creating
+ Network catedra-2-cloud-computing_default  Created
+ Volume "catedra-2-cloud-computing_postgres_data"  Creating
+ Volume "catedra-2-cloud-computing_postgres_data"  Created
+ Container catedra-2-cloud-computing-db-1  Creating
+ Container catedra-2-cloud-computing-db-1  Created
+ Container catedra-2-cloud-computing-backend-1  Creating
+ Container catedra-2-cloud-computing-backend-1  Created
+ Container catedra-2-cloud-computing-frontend-1  Creating
+ Container catedra-2-cloud-computing-frontend-1  Created
+ Container catedra-2-cloud-computing-db-1  Starting
+ Container catedra-2-cloud-computing-db-1  Started
+ Container catedra-2-cloud-computing-db-1  Waiting
+ Container catedra-2-cloud-computing-db-1  Healthy
+ Container catedra-2-cloud-computing-backend-1  Starting
+ Container catedra-2-cloud-computing-backend-1  Started
+ Container catedra-2-cloud-computing-backend-1  Waiting
+ Container catedra-2-cloud-computing-backend-1  Healthy
+ Container catedra-2-cloud-computing-frontend-1  Starting
+ Container catedra-2-cloud-computing-frontend-1  Started
+NAME                                   IMAGE                                COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+catedra-2-cloud-computing-backend-1    catedra-2-cloud-computing-backend    "uvicorn main:app --…"   backend    12 seconds ago   Up 6 seconds (healthy)    8000/tcp
+catedra-2-cloud-computing-db-1         postgres:16-alpine                   "docker-entrypoint.s…"   db         12 seconds ago   Up 11 seconds (healthy)   5432/tcp
+catedra-2-cloud-computing-frontend-1   catedra-2-cloud-computing-frontend   "/docker-entrypoint.…"   frontend   12 seconds ago   Up Less than a second     0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+{"status":"ok","database":"reachable"}db health=healthy
+backend health=healthy
+PASS: API and PostgreSQL health endpoint
+
+===== Frontend to backend to PostgreSQL communication =====
+Test item: codespace-validation-20261119T234924Z
+{"id":1,"name":"codespace-validation-20261119T234924Z","created_at":"2026-11-19T23:49:24.413799"}
+[{"id":1,"name":"codespace-validation-20261119T234924Z","created_at":"2026-11-19T23:49:24.413799"}]
+PASS: item created and returned through Nginx
+
+===== Persistence after container recreation =====
+ Container catedra-2-cloud-computing-frontend-1  Stopping
+ Container catedra-2-cloud-computing-frontend-1  Stopped
+ Container catedra-2-cloud-computing-frontend-1  Removing
+ Container catedra-2-cloud-computing-frontend-1  Removed
+ Container catedra-2-cloud-computing-backend-1  Stopping
+ Container catedra-2-cloud-computing-backend-1  Stopped
+ Container catedra-2-cloud-computing-backend-1  Removing
+ Container catedra-2-cloud-computing-backend-1  Removed
+ Container catedra-2-cloud-computing-db-1  Stopping
+ Container catedra-2-cloud-computing-db-1  Stopped
+ Container catedra-2-cloud-computing-db-1  Removing
+ Container catedra-2-cloud-computing-db-1  Removed
+ Network catedra-2-cloud-computing_default  Removing
+ Network catedra-2-cloud-computing_default  Removed
+Compose can now delegate builds to bake for better performance.
+ To do so, set COMPOSE_BAKE=true.
+#0 building with "default" instance using docker driver
+
+#1 [backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 243B done
+#1 DONE 0.0s
+
+#2 [backend internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.1s
+
+#3 [backend internal] load .dockerignore
+#3 transferring context: 32B
+#3 transferring context: 81B done
+#3 DONE 0.0s
+
+#4 [backend 1/5] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#4 DONE 0.0s
+
+#5 [backend internal] load build context
+#5 transferring context: 64B done
+#5 DONE 0.0s
+
+#6 [backend 4/5] RUN pip install --no-cache-dir -r requirements.txt
+#6 CACHED
+
+#7 [backend 2/5] WORKDIR /app
+#7 CACHED
+
+#8 [backend 3/5] COPY requirements.txt .
+#8 CACHED
+
+#9 [backend 5/5] COPY main.py .
+#9 CACHED
+
+#10 [backend] exporting to image
+#10 exporting layers done
+#10 writing image sha256:16c5d92d3f76d9c2c92e4f5614d89b71c3c40e8b06a39a2985ccb85664ed5af6 done
+#10 naming to docker.io/library/catedra-2-cloud-computing-backend done
+#10 DONE 0.0s
+
+#11 [backend] resolving provenance for metadata file
+#11 DONE 0.0s
+
+#12 [frontend internal] load build definition from Dockerfile
+#12 transferring dockerfile: 168B done
+#12 DONE 0.0s
+
+#13 [frontend internal] load metadata for docker.io/library/nginx:1.27-alpine
+#13 DONE 0.1s
+
+#14 [frontend internal] load .dockerignore
+#14 transferring context: 65B done
+#14 DONE 0.0s
+
+#15 [frontend 1/3] FROM docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+#15 DONE 0.0s
+
+#16 [frontend internal] load build context
+#16 transferring context: 62B done
+#16 DONE 0.0s
+
+#17 [frontend 2/3] COPY index.html /usr/share/nginx/html/index.html
+#17 CACHED
+
+#18 [frontend 3/3] COPY nginx.conf /etc/nginx/conf.d/default.conf
+#18 CACHED
+
+#19 [frontend] exporting to image
+#19 exporting layers done
+#19 writing image sha256:b9ef8fe19df9c8c7de747d9020585cad8d7c85dfbbe0ef1b12040f58de4fbe5b done
+#19 naming to docker.io/library/catedra-2-cloud-computing-frontend done
+#19 DONE 0.0s
+
+#20 [frontend] resolving provenance for metadata file
+#20 DONE 0.0s
+ backend  Built
+ frontend  Built
+ Network catedra-2-cloud-computing_default  Creating
+ Network catedra-2-cloud-computing_default  Created
+ Container catedra-2-cloud-computing-db-1  Creating
+ Container catedra-2-cloud-computing-db-1  Created
+ Container catedra-2-cloud-computing-backend-1  Creating
+ Container catedra-2-cloud-computing-backend-1  Created
+ Container catedra-2-cloud-computing-frontend-1  Creating
+ Container catedra-2-cloud-computing-frontend-1  Created
+ Container catedra-2-cloud-computing-db-1  Starting
+ Container catedra-2-cloud-computing-db-1  Started
+ Container catedra-2-cloud-computing-db-1  Waiting
+ Container catedra-2-cloud-computing-db-1  Healthy
+ Container catedra-2-cloud-computing-backend-1  Starting
+ Container catedra-2-cloud-computing-backend-1  Started
+ Container catedra-2-cloud-computing-backend-1  Waiting
+ Container catedra-2-cloud-computing-backend-1  Healthy
+ Container catedra-2-cloud-computing-frontend-1  Starting
+ Container catedra-2-cloud-computing-frontend-1  Started
+NAME                                   IMAGE                                COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+catedra-2-cloud-computing-backend-1    catedra-2-cloud-computing-backend    "uvicorn main:app --…"   backend    12 seconds ago   Up 6 seconds (healthy)    8000/tcp
+catedra-2-cloud-computing-db-1         postgres:16-alpine                   "docker-entrypoint.s…"   db         12 seconds ago   Up 11 seconds (healthy)   5432/tcp
+catedra-2-cloud-computing-frontend-1   catedra-2-cloud-computing-frontend   "/docker-entrypoint.…"   frontend   12 seconds ago   Up Less than a second     0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+{"status":"ok","database":"reachable"}db health=healthy
+backend health=healthy
+[{"id":1,"name":"codespace-validation-20261119T234924Z","created_at":"2026-11-19T23:49:24.413799"}]
+DRIVER    VOLUME NAME
+local     catedra-2-cloud-computing_postgres_data
+PASS: item survived docker compose down and container recreation
+
+===== Controlled backend failure =====
+ Container catedra-2-cloud-computing-backend-1  Stopping
+ Container catedra-2-cloud-computing-backend-1  Stopped
+NAME                                   IMAGE                                COMMAND                  SERVICE    CREATED          STATUS                              PORTS
+catedra-2-cloud-computing-backend-1    catedra-2-cloud-computing-backend    "uvicorn main:app --…"   backend    13 seconds ago   Exited (0) Less than a second ago   
+catedra-2-cloud-computing-db-1         postgres:16-alpine                   "docker-entrypoint.s…"   db         13 seconds ago   Up 12 seconds (healthy)             5432/tcp
+catedra-2-cloud-computing-frontend-1   catedra-2-cloud-computing-frontend   "/docker-entrypoint.…"   frontend   13 seconds ago   Up 1 second                         0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+curl exit status: 0; HTTP status: 504
+<html>
+<head><title>504 Gateway Time-out</title></head>
+<body>
+<center><h1>504 Gateway Time-out</h1></center>
+<hr><center>nginx/1.27.5</center>
+</body>
+</html>
+backend-1  | INFO:     Started server process [1]
+frontend-1  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+frontend-1  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+frontend-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+frontend-1  | 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+frontend-1  | 10-listen-on-ipv6-by-default.sh: info: /etc/nginx/conf.d/default.conf differs from the packaged version
+frontend-1  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+frontend-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+frontend-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+frontend-1  | /docker-entrypoint.sh: Configuration complete; ready for start up
+frontend-1  | 2026/11/19 23:49:37 [notice] 1#1: using the "epoll" event method
+frontend-1  | 2026/11/19 23:49:37 [notice] 1#1: nginx/1.27.5
+frontend-1  | 2026/11/19 23:49:37 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+frontend-1  | 2026/11/19 23:49:37 [notice] 1#1: OS: Linux 6.8.0-1070-azure
+frontend-1  | 2026/11/19 23:49:37 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1024:524288
+frontend-1  | 2026/11/19 23:49:37 [notice] 1#1: start worker processes
+frontend-1  | 2026/11/19 23:49:37 [notice] 1#1: start worker process 30
+frontend-1  | 2026/11/19 23:49:37 [notice] 1#1: start worker process 31
+frontend-1  | 172.18.0.1 - - [19/Nov/2026:23:49:38 +0000] "GET /api/health HTTP/1.1" 200 38 "-" "curl/7.68.0" "-"
+frontend-1  | 172.18.0.1 - - [19/Nov/2026:23:49:38 +0000] "GET /api/items HTTP/1.1" 200 99 "-" "curl/7.68.0" "-"
+frontend-1  | 2026/11/19 23:50:39 [error] 30#30: *5 upstream timed out (110: Operation timed out) while connecting to upstream, client: 172.18.0.1, server: _, request: "GET /api/health HTTP/1.1", upstream: "http://172.18.0.3:8000/health", host: "localhost:8080"
+frontend-1  | 172.18.0.1 - - [19/Nov/2026:23:50:39 +0000] "GET /api/health HTTP/1.1" 504 167 "-" "curl/7.68.0" "-"
+backend-1   | INFO:     Waiting for application startup.
+backend-1   | INFO:     Application startup complete.
+backend-1   | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+backend-1   | INFO:     127.0.0.1:50858 - "GET /health HTTP/1.1" 200 OK
+backend-1   | INFO:     172.18.0.4:59976 - "GET /health HTTP/1.0" 200 OK
+backend-1   | INFO:     172.18.0.4:59988 - "GET /items HTTP/1.0" 200 OK
+backend-1   | INFO:     Shutting down
+backend-1   | INFO:     Waiting for application shutdown.
+backend-1   | INFO:     Application shutdown complete.
+backend-1   | INFO:     Finished server process [1]
+PASS: API became unavailable while backend was stopped
+
+===== Backend recovery =====
+ Container catedra-2-cloud-computing-db-1  Waiting
+ Container catedra-2-cloud-computing-db-1  Healthy
+ Container catedra-2-cloud-computing-backend-1  Starting
+ Container catedra-2-cloud-computing-backend-1  Started
+curl: (22) The requested URL returned error: 502 Bad Gateway
+{"status":"ok","database":"reachable"}db health=healthy
+backend health=starting
+ERROR: backend is not healthy.
