@@ -1,0 +1,5 @@
+flowchart LR
+    browser["Browser / Codespace port 8080"] -->|HTTP :80| frontend["frontend<br/>Nginx"]
+    frontend -->|"/api/* → backend:8000/*"| backend["backend<br/>FastAPI"]
+    backend -->|"postgresql+psycopg :5432"| db[("db<br/>PostgreSQL 16")]
+    db --- volume[("postgres_data<br/>named volume")]
