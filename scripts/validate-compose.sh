@@ -28,6 +28,48 @@ wait_for_api() {
   return 1
 }
 
+assert_healthy() {
+  local service container_id health
+  for service in db backend; do
+    container_id="$(docker compose ps -q "$service")"
+    if [[ -z "$container_id" ]]; then
+      echo "ERROR: no running container found for $service."
+      return 1
+    fi
+    health="$(docker inspect --format '{{.State.Health.Status}}' "$container_id")"
+    printf '%s health=%s\n' "$service" "$health"
+    if [[ "$health" != "healthy" ]]; then
+      echo "ERROR: $service is not healthy."
+      return 1
+    fi
+  done
+}
+
+section "Baseline diagnosis from the original commit"
+git show cce1dfb:compose.yaml
+git show cce1dfb:backend/Dockerfile
+git show cce1dfb:backend/requirements.txt
+git show cce1dfb:frontend/nginx.conf
+BASELINE_DIR="$(mktemp -d)"
+git archive cce1dfb | tar -x -C "$BASELINE_DIR"
+set +e
+docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" up --build -d
+BASELINE_START_STATUS=$?
+set -e
+printf 'Original compose startup exit status: %s\n' "$BASELINE_START_STATUS"
+docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" ps -a
+docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" logs --tail=60 db backend frontend || true
+set +e
+docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" run --build --rm backend \
+  uvicorn main:app --host 0.0.0.0 --port 8000
+BASELINE_DRIVER_STATUS=$?
+set -e
+printf 'Original backend with corrected module target exit status: %s\n' "$BASELINE_DRIVER_STATUS"
+docker compose -p rescue_baseline -f "$BASELINE_DIR/compose.yaml" down -v --remove-orphans
+if [[ "$BASELINE_DIR" == /tmp/tmp.* ]]; then
+  rm -rf "$BASELINE_DIR"
+fi
+
 section "Docker toolchain"
 docker --version
 docker compose version
@@ -43,6 +85,7 @@ section "Required clean startup"
 docker compose up --build -d
 docker compose ps
 wait_for_api
+assert_healthy
 echo "PASS: API and PostgreSQL health endpoint"
 
 section "Frontend to backend to PostgreSQL communication"
@@ -63,6 +106,7 @@ docker compose down
 docker compose up --build -d
 docker compose ps
 wait_for_api
+assert_healthy
 ITEMS_AFTER_RECREATE="$(curl -fsS http://localhost:8080/api/items)"
 printf '%s\n' "$ITEMS_AFTER_RECREATE"
 grep -Fq "$ITEM" <<< "$ITEMS_AFTER_RECREATE"
@@ -90,6 +134,7 @@ fi
 section "Backend recovery"
 docker compose start backend
 wait_for_api
+assert_healthy
 docker compose ps
 echo "PASS: API recovered after backend restart"
 
